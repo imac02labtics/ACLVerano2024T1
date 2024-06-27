@@ -1,39 +1,122 @@
-# Imprimir tabla usando pandas
-import pandas as pd
-def printTable(encabezados, contenido):
-    if len(encabezados) == len(contenido):
-        data = dict(zip(encabezados, contenido))
-        df = pd.DataFrame(data)
-        # Imprimir el DataFrame sin los índices
-        print(df.to_string(index=False))
-    else:
-        print("La longitud de encabezados y contenido no coincide")
-
-# Crear tabla HTML
-from IPython.display import HTML, display
-def printHTMLTable(encabezados, contenido):
-    if len(encabezados) == len(contenido):
-        html = "<center><table>"
-        html += "<tr>"
-        for header in encabezados:
-            html += f"<th style='border: 1px #ccc solid; text-align: center;'>{header}</th>"
-        html += "</tr>"
-        rowsNum = len(contenido[0])
-        for row in range(rowsNum):
-            html += "<tr>"
-            for col in contenido:
-                html += f"<td style='border: 1px #ccc solid; text-align: center;'>{col[row]}</td>"
-            html += "</tr>"
-        html += "</table></center>"
-        
-        display(HTML(html))
-    else:
-        print("Verificar longitud de encabezados y contenido")
-
-def datosStrPorcentaje(fr, frAc):
-    frStr, frAcStr = [], []
-    for i in range(len(fr)):
-        frStr.append(str(fr[i]) + "%")
-    for i in range(len(frAc)):
-        frAcStr.append(str(frAc[i]) + "%")
-    return frStr, frAcStr
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "347a49ac-b3a8-4b88-a30b-6d73642c092c",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def menorMayor(lista):\n",
+    "    l = len(lista)\n",
+    "    for i in range(0,l):\n",
+    "        elemento = i\n",
+    "        for j in range(i + 1, l):\n",
+    "            if lista[j] < lista[elemento]: # <>\n",
+    "                elemento = j\n",
+    "        lista[i], lista[elemento] = lista[elemento], lista[i]\n",
+    "\n",
+    "    return lista\n",
+    "\n",
+    "# Odenar clases por frecuencia de mayor a menor\n",
+    "def mayorMenorFrec(listaClases, listaFrec):\n",
+    "    l = len(listaClases)\n",
+    "    for i in range(0,l):\n",
+    "        elemento = i\n",
+    "        for j in range(i + 1, l):\n",
+    "            if listaFrec[j] < listaFrec[elemento]: # <>\n",
+    "                elemento = j\n",
+    "        listaClases[i], listaClases[elemento] = listaClases[elemento], listaClases[i]\n",
+    "        listaFrec[i], listaFrec[elemento] = listaFrec[elemento], listaFrec[i]\n",
+    "\n",
+    "    return listaClases, listaFrec\n",
+    "\n",
+    "# FORMATEAR DATOS\n",
+    "def formatData(dataArray):\n",
+    "    dataArraySorted = []\n",
+    "    for element in dataArray:\n",
+    "        if isinstance(element, str):\n",
+    "            element = element.strip()\n",
+    "            element = element.lower()\n",
+    "            dataArraySorted.append(element)\n",
+    "        else:\n",
+    "            element = round(element, 3)\n",
+    "            dataArraySorted.append(element)\n",
+    "    \n",
+    "    return dataArraySorted;\n",
+    "\n",
+    "# OBTENER DATOS PARA LA TABLA DE FRECUENCIAS\n",
+    "def generateDiscreteData(lstDatos):\n",
+    "    lstDatos = menorMayor(lstDatos)\n",
+    "    lstDatos = formatData(lstDatos)\n",
+    "    clase, frecAbs = [], []\n",
+    "    for element in lstDatos:\n",
+    "        if(element not in clase):\n",
+    "            clase.append(element)\n",
+    "            frecAbs.append(1)\n",
+    "        else:\n",
+    "            frecAbs[clase.index(element)] += 1\n",
+    "        \n",
+    "    frecAbsAc, frecRel, frecRelAc = [], [], []\n",
+    "    frecAbsT = sum(frecAbs)\n",
+    "    ultFa = 0\n",
+    "    ultFr = 0\n",
+    "    for fa in frecAbs:\n",
+    "        fr = 100 / frecAbsT * fa\n",
+    "        frecRel.append(round(fr, 3))\n",
+    "        frecRelAc.append(round(fr+ultFr, 3))\n",
+    "        frecAbsAc.append(fa+ultFa)\n",
+    "        ultFr += fr\n",
+    "        ultFa += fa\n",
+    "    return clase, frecAbs, frecAbsAc, frecRel, frecRelAc\n",
+    "\n",
+    "# OBTENER DATOS PARA LA TABLA DE FRECUENCIAS\n",
+    "def generateQualitativeData(lstDatos):\n",
+    "    lstDatos = formatData(lstDatos)\n",
+    "    clase, frecAbs = [], []\n",
+    "    for element in lstDatos:\n",
+    "        if(element not in clase):\n",
+    "            clase.append(element)\n",
+    "            frecAbs.append(1)\n",
+    "        else:\n",
+    "            frecAbs[clase.index(element)] += 1\n",
+    "            \n",
+    "    clase, frecAbs = mayorMenorFrec(clase, frecAbs)\n",
+    "    \n",
+    "    frecAbsAc, frecRel, frecRelAc = [], [], []\n",
+    "    frecAbsT = sum(frecAbs)\n",
+    "    ultFa = 0\n",
+    "    ultFr = 0\n",
+    "    for fa in frecAbs:\n",
+    "        fr = 100 / frecAbsT * fa\n",
+    "        frecRel.append(round(fr, 3))\n",
+    "        frecRelAc.append(round(fr+ultFr, 3))\n",
+    "        frecAbsAc.append(fa+ultFa)\n",
+    "        ultFr += fr\n",
+    "        ultFa += fa\n",
+    "    return clase, frecAbs, frecAbsAc, frecRel, frecRelAc"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.4"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
